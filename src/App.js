@@ -2,23 +2,14 @@
 /* eslint-disable no-console */
 /* eslint-disable react/function-component-definition */
 import React, { useState } from 'react';
-import { MdDelete } from 'react-icons/md';
-import './App.css';
+
+import NewTodo from './components/NewTodo';
+import TodoList from './components/TodoList';
 
 const App = () => {
   const [todos, setTodos] = useState([]);
-  const [value, setValue] = useState('');
 
-  const ENTER_KEY = 13;
-  const ESCAPE_KEY = 27;
-
-  const onChange = (event) => {
-    setValue(event.target.value);
-  };
-
-  const erase = () => setValue('');
-
-  const submit = () => {
+  const onNewTodo = (value) => {
     setTodos([
       ...todos,
 
@@ -28,16 +19,21 @@ const App = () => {
         checked: false,
       },
     ]);
-    erase();
   };
 
-  const onKeyDown = (event) => {
-    if (event.which === ENTER_KEY) {
-      submit();
-    } else if (event.which === ESCAPE_KEY) {
-      console.log('Apagar texto!');
-      erase();
-    }
+  const onToggle = (todo) => {
+    const newTodos = todos.map((obj) =>
+      obj.id === todo.id ? { ...obj, checked: !todo.checked } : obj
+    );
+
+    setTodos(newTodos);
+
+    console.log(newTodos);
+  };
+
+  const onRemove = (todo) => {
+    setTodos(todos.filter((obj) => obj.id !== todo.id));
+    console.log(todo);
   };
 
   return (
@@ -47,25 +43,8 @@ const App = () => {
       </header>
 
       <section className="main">
-        <input
-          className="new-todo"
-          placeholder="O que precisa ser feito ?"
-          value={value}
-          onChange={onChange}
-          onKeyDown={onKeyDown}
-          type="text"
-        />
-
-        <ul className="todo-list">
-          {todos.map((todo) => (
-            <li key={todo.id.toString()}>
-              <span className="todo">{todo.title}</span>
-              <button className="remove" type="button">
-                <MdDelete size={28} />
-              </button>
-            </li>
-          ))}
-        </ul>
+        <NewTodo onNewTodo={onNewTodo} />
+        <TodoList todos={todos} onToggle={onToggle} onRemove={onRemove} />
       </section>
     </section>
   );
